@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ProjectModule } from './project/project.module';
+import { UserModule } from './user/user.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
-  imports: [],
+  imports: [MongooseModule.forRoot('mongodb://localhost/taskManagementSystem'), ProjectModule, UserModule, TaskModule],
   controllers: [AppController],
   providers: [AppService],
 })
