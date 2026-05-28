@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/user/user.schema';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
-    constructor(@InjectModel(User.name) private readonly userModel:Model<UserDocument>) {}
+    constructor(@InjectModel(User.name) private readonly userModel:Model<UserDocument>, private jwtService: JwtService) {}
 
-    async login(loginDto: LoginDto) {
-
+    async login(loginDto: LoginDto):Promise<{accessToken: string}> {
         const UserExist = await this.userModel.findOne({userEmail: loginDto.email});
 
         if (!UserExist) {
@@ -19,25 +19,23 @@ export class AuthService {
         }
 
         if(UserExist.userPassword != loginDto.password){
-            throw new Error('Invalid credentials');
+            throw new UnauthorizedException("Invalid credentials");
         }
 
-        //return token
-
-        return true;
+        const payload = {sub:UserExist.userId, email:UserExist.userEmail, role:UserExist.userRole};
+        return {
+            accessToken:await this.jwtService.signAsync(payload)
+        }
     }
 
-
     async register(registerDto: RegisterDto) {
+        const isUserExist = await this.userModel.findOne({userEmail:registerDto.email});
+        if(isUserExist) {
+            throw new Error('User with this email already exists');
+        }
 
         if(registerDto.password !== registerDto.confirmPassword) {
             throw new Error('Passwords do not match');
-        }
-        
-        const isUserExist = await this.userModel.findOne({userEmail:registerDto.email});
-
-        if(isUserExist) {
-            throw new Error('User with this email already exists');
         }
 
         let userId = 1;
