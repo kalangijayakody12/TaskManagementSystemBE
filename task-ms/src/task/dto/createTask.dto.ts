@@ -5,6 +5,6 @@ export class CreateTaskDto {
     taskStartDate!: Date;
     taskDueDate!: Date;
     taskStatus!: string;
-    taskAssignedMember!: string;
+    // taskAssignedMember!: string;
     projectBelong!: string;
 }
