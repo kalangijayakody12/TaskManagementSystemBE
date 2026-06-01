@@ -8,8 +8,13 @@ import { InjectModel } from '@nestjs/mongoose';
 export class ProjectService {
   constructor(@InjectModel(Project.name) private projectModel:Model<ProjectDocument>) {}
 
-  async createNewProject(createProjectDto: CreateProjectDto) {
-    const newProject = new this.projectModel(createProjectDto);
+  async createNewProject(createProjectDto: CreateProjectDto, userId: object) {
+    console.log(createProjectDto);
+
+    const newProject = new this.projectModel({
+      ...createProjectDto,
+      projectOwner: userId
+    } );
     await newProject.save();
     return newProject;
   }
