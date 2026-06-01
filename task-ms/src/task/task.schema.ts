@@ -24,10 +24,10 @@ export class Task {
     taskStatus !: string;
 
     @Prop({type:mongoose.Schema.Types.ObjectId, ref:'User'})
-    taskAssignedMember !: mongoose.Types.ObjectId;
+    taskAssignedMember !: string[] | undefined;
     
     @Prop({type:mongoose.Schema.Types.ObjectId, ref:'Project'})
-    projectBelong !: mongoose.Types.ObjectId;
+    projectBelong !: string;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

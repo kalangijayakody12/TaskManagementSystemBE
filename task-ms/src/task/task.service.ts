@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 export class TaskService {
   constructor(@InjectModel(Task.name) private taskModel:Model<TaskDocument>) {}
 
-  async createNewTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createNewTask(createTaskDto: CreateTaskDto ): Promise<Task> {
     const newTask = new this.taskModel(createTaskDto);
     await newTask.save();
     return newTask;
@@ -16,6 +16,14 @@ export class TaskService {
 
   findAllTasks() {
     return this.taskModel.find().exec();
+  }
+
+  async findAllProjectTasks(projectId:string) :Promise<Task[]>{
+    const tasks = await this.taskModel.find({projectBelong:projectId}).exec()
+    if(tasks.length ===0){
+      return [];
+    }
+    return tasks;
   }
 
   async findOneTask(id: number) {
