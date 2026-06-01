@@ -23,8 +23,8 @@ export class ProjectService {
     return await this.projectModel.find().exec();  
   }
 
-  async findOneProject(id: number) {
-    const project = await this.projectModel.findOne({projectId:id});
+  async findOneProject(id: string) {
+    const project = await this.projectModel.findById(id);
     if (!project) {
       throw new Error(`Project with id ${id} not found`);
     }
