@@ -3,6 +3,7 @@ import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
+import { jwtConstants } from "./constants";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -19,7 +20,6 @@ export class AuthGuard implements CanActivate {
         return true;
         }
 
-    
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
 
@@ -27,7 +27,10 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException();
         }
         try {
-            const payload = await this.jwtService.verify(token);
+            // const payload = await this.jwtService.verify(token);
+            const payload = await this.jwtService.verifyAsync(token, {
+                secret: jwtConstants.secret,
+            });
             request['user'] = payload;
         } catch {
             throw new UnauthorizedException();

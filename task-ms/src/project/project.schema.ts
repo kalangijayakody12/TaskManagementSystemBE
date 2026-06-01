@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
+import { User } from "src/user/user.schema";
 
 export type ProjectDocument = HydratedDocument<Project>;
 
@@ -21,7 +22,7 @@ export class Project {
     projectStatus !:string;
 
     @Prop({required: true, type:mongoose.Schema.Types.ObjectId, ref:'User'})
-    projectOwner !:mongoose.Types.ObjectId;
+    projectOwner !:User;
 
     @Prop([{type:mongoose.Schema.Types.ObjectId , ref:'User'}])
     assignedMembers:mongoose.Types.ObjectId[] | undefined;
