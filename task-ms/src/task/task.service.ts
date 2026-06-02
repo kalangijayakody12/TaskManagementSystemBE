@@ -26,8 +26,8 @@ export class TaskService {
     return tasks;
   }
 
-  async findOneTask(id: number) {
-    const task = await this.taskModel.findOne({taskId: id});
+  async findOneTask(id: string) {
+    const task = await this.taskModel.findById(id);
     if (!task) {
       throw new Error(`Task with id ${id} not found`);
     }
