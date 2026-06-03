@@ -7,8 +7,8 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.createNewTask(createTaskDto);
+  create(@Body() createTaskDto: CreateTaskDto, @Request() req) {
+    return this.taskService.createNewTask(createTaskDto, req.user.sub);
   }
 
   @Get()
@@ -27,8 +27,8 @@ export class TaskController {
   }
 
   @Patch(':id')
-  updateTaskDetails(@Param('id') id:string, @Body() updateTaskDto:any){
-    return this.taskService.updateTask(id, updateTaskDto);
+  updateTaskDetails(@Param('id') id:string, @Body() updateTaskDto:any, @Request() req){
+    return this.taskService.updateTask(id, updateTaskDto, req.user.sub);
   }
 
   @Delete(':id')

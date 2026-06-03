@@ -51,7 +51,7 @@ export class AuthService {
             userRole: registerDto.role
         });
 
-        // return newUser.save();
+        await newUser.save();
         const payload = {sub:newUser._id, email:newUser.userEmail, role:newUser.userRole};
         return {
             accessToken:await this.jwtService.signAsync(payload),
