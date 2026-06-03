@@ -8,8 +8,14 @@ import { Model } from 'mongoose';
 export class TaskService {
   constructor(@InjectModel(Task.name) private taskModel:Model<TaskDocument>) {}
 
-  async createNewTask(createTaskDto: CreateTaskDto ): Promise<Task> {
-    const newTask = new this.taskModel(createTaskDto);
+  async createNewTask(createTaskDto: CreateTaskDto, userId:string ): Promise<Task> {
+    const newTaskData = {...createTaskDto,taskActivityHistory:[{
+      status:"Not started",
+      changedAt:new Date(),
+      changedBy:userId
+    }] };
+    const newTask = new this.taskModel(newTaskData);  
+    console.log("New task: ", newTask);
     await newTask.save();
     return newTask;
   }
@@ -20,7 +26,7 @@ export class TaskService {
 
   async findAllProjectTasks(projectId:string) :Promise<Task[]>{
     const tasks = await this.taskModel.find({projectBelong:projectId}).exec();
-    console.log("takss: ", tasks);
+    console.log("tasks: ", tasks);
     if(tasks.length ===0){
       return [];
     }
@@ -28,7 +34,7 @@ export class TaskService {
   }
 
   async findOneTask(id: string) {
-    const task = await this.taskModel.findById(id).populate('taskAssignedMembers').exec();
+    const task = await this.taskModel.findById(id).populate('taskAssignedMembers').populate('taskActivityHistory.changedBy').exec();
     if (!task) {
       throw new Error(`Task with id ${id} not found`);
     }
@@ -43,12 +49,51 @@ export class TaskService {
     return deletedTask;
   }
 
-  async updateTask(id:string, updateTaskDto:any){
-    const updateTask = await this.taskModel.findByIdAndUpdate(id, updateTaskDto);
+  async updateTask(id:string, updateTaskDto:any, userId:string) {
+    // const existingTask = await this.taskModel.findById(id).exec();
 
-    if(!updateTask) {
-      throw new Error(`Task with id ${id} not found`);
-    }
-    return updateTask;
+    // if(existingTask?.taskStatus !== updateTaskDto.status ) {
+    //   updateTaskDto.taskActivityHistory.push({
+    //     status: updateTaskDto.status,
+    //     changedAt: new Date(),
+    //     changedBy: userId
+    //   })
+    //   const updateTask = await this.taskModel.findByIdAndUpdate(id, updateTaskDto);
+
+    //   if(!updateTask) {
+    //     throw new Error(`Task with id ${id} not found`);
+    //   }
+    //   return updateTask;
+    // }
+
+    // else {
+
+    // }
+
+      const existingTask = await this.taskModel.findById(id);
+
+      if (!existingTask) {
+        throw new Error(`Task with id ${id} not found`);
+      }
+
+      if (existingTask.taskStatus !== updateTaskDto.taskStatus) {
+
+        existingTask.taskActivityHistory.push({
+          status: updateTaskDto.taskStatus,
+          changedAt: new Date(),
+          changedBy: userId
+        });
+      }
+
+      existingTask.taskStatus =
+        updateTaskDto.taskStatus ?? existingTask.taskStatus;
+
+      existingTask.taskAssignedMembers =
+        updateTaskDto.taskAssignedMembers ?? existingTask.taskAssignedMembers;
+
+      await existingTask.save();
+
+  return existingTask;
+    
   }
 }

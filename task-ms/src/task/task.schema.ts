@@ -28,6 +28,14 @@ export class Task {
     
     @Prop({type:mongoose.Schema.Types.ObjectId, ref:'Project'})
     projectBelong !: string;
+
+    @Prop([
+    {
+      status:String,
+      changedAt:Date,
+      changedBy:{type:mongoose.Schema.Types.ObjectId, ref:'User'}
+    }])
+    taskActivityHistory !: any[];
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
