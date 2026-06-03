@@ -23,8 +23,8 @@ export class Task {
     @Prop({required: true})
     taskStatus !: string;
 
-    @Prop({type:mongoose.Schema.Types.ObjectId, ref:'User'})
-    taskAssignedMember !: string[] | undefined;
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] })
+    taskAssignedMembers !: string[] | undefined;
     
     @Prop({type:mongoose.Schema.Types.ObjectId, ref:'Project'})
     projectBelong !: string;

@@ -31,8 +31,8 @@ export class ProjectService {
     return project;
   }
 
-  removeProject(id: number) {
-    const deletedProject = this.projectModel.findOneAndDelete({projectId:id});
+  removeProject(id: string) {
+    const deletedProject = this.projectModel.findByIdAndDelete(id);
     if (!deletedProject) {
       throw new Error(`Project with id ${id} not found`);
     }

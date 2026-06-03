@@ -17,7 +17,7 @@ export class UserService {
   }
 
   async findAllUsers() {
-    return await this.userModel.find();
+    return await this.userModel.find().exec();
   }
 
   async findOneUser(id: number){
