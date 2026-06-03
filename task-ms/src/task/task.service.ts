@@ -15,11 +15,12 @@ export class TaskService {
   }
 
   findAllTasks() {
-    return this.taskModel.find().exec();
+    return this.taskModel.find().populate('taskAssignedMembers').exec();
   }
 
   async findAllProjectTasks(projectId:string) :Promise<Task[]>{
-    const tasks = await this.taskModel.find({projectBelong:projectId}).exec()
+    const tasks = await this.taskModel.find({projectBelong:projectId}).exec();
+    console.log("takss: ", tasks);
     if(tasks.length ===0){
       return [];
     }
@@ -27,18 +28,27 @@ export class TaskService {
   }
 
   async findOneTask(id: string) {
-    const task = await this.taskModel.findById(id);
+    const task = await this.taskModel.findById(id).populate('taskAssignedMembers').exec();
     if (!task) {
       throw new Error(`Task with id ${id} not found`);
     }
     return task;
   }
 
-  async removeTask(id: number) {
-    const deletedTask = this.taskModel.findOneAndDelete({taskId: id});
+  async removeTask(id: string) {
+    const deletedTask = this.taskModel.findByIdAndDelete(id);
     if(!deletedTask) {
       throw new Error(`Task with id ${id} not found`);
     }
     return deletedTask;
+  }
+
+  async updateTask(id:string, updateTaskDto:any){
+    const updateTask = await this.taskModel.findByIdAndUpdate(id, updateTaskDto);
+
+    if(!updateTask) {
+      throw new Error(`Task with id ${id} not found`);
+    }
+    return updateTask;
   }
 }
