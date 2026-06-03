@@ -13,7 +13,7 @@ import { RolesGuard } from './roles.guard';
     imports: [MongooseModule.forFeature([{name:User.name, schema:UserSchema}]), JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '180s' },
+      signOptions: { expiresIn: '1800s' },
     })
 ],
     controllers: [AuthController],

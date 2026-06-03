@@ -11,7 +11,7 @@ export class AuthService {
 
     constructor(@InjectModel(User.name) private readonly userModel:Model<UserDocument>, private jwtService: JwtService) {}
 
-    async login(loginDto: LoginDto):Promise<{accessToken: string}> {
+    async login(loginDto: LoginDto):Promise<{accessToken: string, role: string, name:string,_id:string}> {
         const UserExist = await this.userModel.findOne({userEmail: loginDto.email});
 
         if (!UserExist) {
@@ -24,7 +24,10 @@ export class AuthService {
 
         const payload = {sub:UserExist._id, email:UserExist.userEmail, role:UserExist.userRole};
         return {
-            accessToken:await this.jwtService.signAsync(payload)
+            accessToken:await this.jwtService.signAsync(payload),
+            role:UserExist.userRole,
+            name:UserExist.userName,
+            _id:String(UserExist._id)
         }
     }
 
@@ -48,6 +51,14 @@ export class AuthService {
             userRole: registerDto.role
         });
 
-        return newUser.save();
+        // return newUser.save();
+        const payload = {sub:newUser._id, email:newUser.userEmail, role:newUser.userRole};
+        return {
+            accessToken:await this.jwtService.signAsync(payload),
+            role:newUser.userRole,
+            name:newUser.userName,
+            _id:String(newUser._id)
+        }
+
     }
 }
